@@ -27,6 +27,21 @@ footer{text-align:center;color:#d9c7dd;padding:25px 15px;font-size:13px}
  body{background:white;color:#111;font-size:11pt}#loader,header,.hero,.stats,.toolbar,.no-print,footer{display:none!important}main{max-width:none;padding:0}.panel{box-shadow:none;border-radius:0;margin:0;background:white}.panel-head{background:white;color:#111;padding:0 0 10px;border-bottom:2px solid #333}.panel-head p{color:#222}.panel-head h2{font-size:18pt}table{min-width:0;width:100%;font-size:10pt}th{background:#eee!important;color:#111!important}th,td{padding:6px 8px;border:1px solid #aaa;color:#111}thead{display:table-header-group}tr{break-inside:avoid}.note{padding:8px 0;color:#333}.print-header{display:block!important}
 }
 .print-header{display:none}
+/* Carga animada: tamales de distintos sabores y canasta que se llena */
+.loader-flavors{display:flex;justify-content:center;align-items:flex-end;gap:clamp(8px,2vw,20px);min-height:88px;margin:8px 0 4px;flex-wrap:wrap}
+.flavor{display:flex;flex-direction:column;align-items:center;gap:3px;animation:tamaleBob 1.1s ease-in-out infinite alternate;filter:drop-shadow(0 5px 7px #12061799)}
+.flavor:nth-child(2){animation-delay:.18s}.flavor:nth-child(3){animation-delay:.36s}.flavor:nth-child(4){animation-delay:.54s}.flavor:nth-child(5){animation-delay:.72s}
+.flavor .tamalito{font-size:clamp(31px,5vw,48px);display:block;line-height:1.1}.flavor small{font-size:10px;letter-spacing:.5px;color:#ffe8b2;font-weight:800;text-transform:uppercase}
+@keyframes tamaleBob{from{transform:translateY(3px) rotate(-4deg)}to{transform:translateY(-9px) rotate(4deg)}}
+.basket-stage{position:relative;width:min(310px,76vw);height:112px;margin:8px auto 0;display:flex;justify-content:center;align-items:flex-end}
+.basket{position:absolute;bottom:0;font-size:76px;line-height:1;filter:drop-shadow(0 0 13px #ffd86b);z-index:2}
+.basket-tamales{position:absolute;bottom:40px;z-index:1;display:flex;justify-content:center;align-items:flex-end;gap:1px;width:100%;min-height:65px}
+.basket-tamales span{font-size:clamp(23px,4vw,35px);opacity:0;transform:translateY(24px) scale(.55) rotate(-18deg);transition:opacity .35s,transform .4s;filter:drop-shadow(0 0 5px #ffdc77)}
+.basket-tamales span.in{opacity:1;transform:translateY(0) scale(1) rotate(var(--tilt,0deg))}
+#loader.complete .basket{animation:basketGlow .8s ease-in-out 2}#loader.complete .loader-flavors{opacity:.75;transition:opacity .5s}
+@keyframes basketGlow{50%{transform:scale(1.12);filter:drop-shadow(0 0 24px #ffe77d)}}
+#loadMessage{min-height:24px;color:#fff4d6;font-weight:700;margin:10px 0 0}
+
 
 .map-panel{margin-top:24px;background:var(--cream);color:var(--ink);border-radius:20px;overflow:hidden;box-shadow:0 18px 50px #120617}.map-head{padding:21px 24px;background:linear-gradient(100deg,#54204f,#8c176f);color:#fff}.map-head h2{margin:0;font-size:clamp(22px,3vw,31px)}.map-head p{margin:7px 0 0;color:#f7e9ca}.map-content{padding:18px}.map-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}.map-stat{background:#f2e5d4;border:1px solid #dfc7a7;border-radius:13px;padding:14px}.map-stat strong{display:block;font-size:25px;color:#54204f}.map-stat span{font-size:12px}.map-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px}.map-filters button{background:#fff;border:1px solid #d7c5d6;color:#402143}.map-filters button.active{background:#54204f;color:#fff}.map-frame{width:100%;height:440px;border:0;border-radius:14px;background:#eadfce}.map-help{font-size:13px;line-height:1.55;color:#654c64;margin:13px 0 0}.map-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.map-actions a{display:inline-block;padding:10px 13px;border-radius:10px;background:#54204f;color:white;text-decoration:none;font-weight:750}.map-actions a:hover{background:#7b286e}.category-key{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.key-pill{padding:7px 10px;border-radius:20px;font-size:12px;font-weight:800;background:#f1e6f2;border:1px solid #ddc4dd}.key-pill.comedor{border-color:#2d9cdb}.key-pill.territorial{border-color:#e8a22d}.key-pill.comunidad{border-color:#40a66a}@media(max-width:760px){.map-summary{grid-template-columns:1fr}.map-frame{height:350px}}
 
@@ -39,7 +54,15 @@ footer{text-align:center;color:#d9c7dd;padding:25px 15px;font-size:13px}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 <body>
-<section id="loader" aria-label="Cargando sitio"><div class="loader-icons" id="loaderIcons">💀 🌽 🫔 🌼</div><div class="loader-title">Tamalada Comunitaria</div><div class="loader-sub">EN IZTAPALAPA · A NADIE SE LE OLVIDA</div><div class="progress-shell"><div class="progress" id="progress"></div></div><strong id="percent">0%</strong><p>Preparando el portal de participantes…</p></section>
+<section id="loader" aria-label="Cargando sitio">
+ <div class="loader-title">Tamalada Comunitaria</div><div class="loader-sub">EN IZTAPALAPA · A NADIE SE LE OLVIDA</div>
+ <div class="loader-flavors" aria-label="Tamales de diferentes sabores">
+  <div class="flavor"><span class="tamalito">🫔</span><small>Verde</small></div><div class="flavor"><span class="tamalito">🫔🌶️</span><small>Rojo</small></div><div class="flavor"><span class="tamalito">🫔🌽</span><small>Dulce</small></div><div class="flavor"><span class="tamalito">🫔🫘</span><small>Frijol</small></div><div class="flavor"><span class="tamalito">🫔🧀</span><small>Queso</small></div>
+ </div>
+ <div class="progress-shell" role="progressbar" aria-label="Progreso de carga" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressShell"><div class="progress" id="progress"></div></div><strong id="percent">0%</strong>
+ <div class="basket-stage" aria-label="Canasta que se llena de tamales"><div class="basket-tamales" id="basketTamales"></div><div class="basket" aria-hidden="true">🧺</div></div>
+ <p id="loadMessage">Preparando la canasta de tamales…</p>
+ </section>
 <header><div class="brand">🌼💀🫔</div><div><h1>Tamalada Comunitaria</h1><p>En Iztapalapa, a nadie se le olvida</p></div></header>
 <main>
 <section class="hero"><div><h2>Una tradición que <span>nos reúne</span></h2><p>Portal de consulta y administración de los registros de participantes de la Tamalada Comunitaria.</p><div class="tags"><span class="tag">📅 Domingo 25 de octubre de 2026</span><span class="tag">🕔 17:00 horas</span><span class="tag">🫔 Entrada libre</span></div><p><b>📍 Sede indicada:</b><br>Parque Castores, Parque Nacional Cerro de la Estrella, Iztapalapa, 09800 Ciudad de México, CDMX.</p></div><img class="poster" src="poster-tamalada.png" alt="Cartel de la Tamalada Comunitaria"></section>
@@ -87,6 +110,7 @@ footer{text-align:center;color:#d9c7dd;padding:25px 15px;font-size:13px}
 <script>
 
 // Helpers definidos al inicio para evitar errores de inicialización en navegadores.
+const $=id=>document.getElementById(id);
 const SITE_COLORS={'Comedor de Cuidados':'#168aad','Dirección territorial':'#dc7b19','Punto comunitario':'#31845a'};
 const SITE_TYPES={'Comedor de Cuidados':'comedores','Dirección territorial':'territoriales','Punto comunitario':'comunitarios'};
 let sites=[], siteMarkers=new Map(), activeSiteType='all', communityMap;
@@ -113,7 +137,6 @@ fetch('sedes.json').then(r=>{if(!r.ok)throw new Error('No se pudo cargar sedes.j
 const KEY='tamalada_iztapalapa_participantes_v3';
 const OLD_KEY='tamalada_iztapalapa_participantes_v2';
 let people=[];
-const $=id=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function persist(){localStorage.setItem(KEY,JSON.stringify(people));}
 function render(){
@@ -159,7 +182,23 @@ function loadData(data){
  people=merged;persist();render();
 }
 fetch('participantes.json').then(r=>{if(!r.ok)throw new Error('No se pudo cargar la base de datos');return r.json()}).then(loadData).catch(()=>{try{const saved=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLD_KEY)||'[]');people=Array.isArray(saved)?saved.map(normalizePerson):[];}catch(e){people=[];}render();});
-let n=0;const timer=setInterval(()=>{n=Math.min(100,n+Math.random()*7+2);$('progress').style.width=n+'%';$('percent').textContent=Math.floor(n)+'%';$('loaderIcons').textContent=['💀 🌽 🫔 🌼','🌺 🫔 🌽 💀','🌽 ✨ 🫔 🌼','💀 🌼 🌽 🫔'][Math.min(3,Math.floor(n/26))];if(n>=100){clearInterval(timer);setTimeout(()=>$('loader').classList.add('done'),450)}},130);
+// Animación de carga independiente del mapa y de las consultas de datos.
+(function startTamaladaLoader(){
+ const loader=document.getElementById('loader'),bar=document.getElementById('progress'),pct=document.getElementById('percent'),shell=document.getElementById('progressShell'),basket=document.getElementById('basketTamales'),msg=document.getElementById('loadMessage');
+ if(!loader||!bar||!pct||!basket)return;
+ const kinds=['🫔','🫔🌶️','🫔🌽','🫔🫘','🫔🧀','🫔🍓','🫔🍍','🫔🍗','🫔🌿','🫔✨'];
+ kinds.forEach((kind,i)=>{const item=document.createElement('span');item.textContent=kind;item.style.setProperty('--tilt',((i%2?1:-1)*(5+(i%3)*3))+'deg');item.setAttribute('aria-hidden','true');basket.appendChild(item)});
+ const items=[...basket.children],messages=['Calentando las ollas…','Preparando tamales verdes y de mole…','Agregando tamales rojos, dulces y de frijol…','Acomodando cada tamalito en la canasta…','¡Canasta llena! La tradición está lista.'];
+ let progress=0,lastStage=-1;
+ // Intervalo breve y determinista: evita que el indicador se quede inmóvil.
+ const timer=setInterval(()=>{
+  progress=Math.min(100,progress+2.5+Math.random()*3.5);
+  const value=Math.floor(progress);bar.style.width=value+'%';pct.textContent=value+'%';shell.setAttribute('aria-valuenow',String(value));
+  const visible=Math.min(items.length,Math.floor(progress/10));items.forEach((item,i)=>item.classList.toggle('in',i<visible));
+  const stage=Math.min(4,Math.floor(progress/25));if(stage!==lastStage){msg.textContent=messages[stage];lastStage=stage;}
+  if(progress>=100){clearInterval(timer);items.forEach(item=>item.classList.add('in'));loader.classList.add('complete');msg.textContent='¡Listo! Una canasta llena de tradición.';setTimeout(()=>loader.classList.add('done'),1600);}
+ },110);
+})();
 try{$('printCount').textContent=localStorage.getItem('tamalada_print_count')||'0'}catch(e){}
 </script>
 </body></html>
