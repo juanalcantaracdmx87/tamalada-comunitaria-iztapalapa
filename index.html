@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#38143d">
+<title>Tamalada Comunitaria | Iztapalapa</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+:root{--purple:#38143d;--purple2:#54204f;--gold:#e9d59a;--magenta:#a8178d;--orange:#e86b0b;--cream:#fff9ed;--ink:#2b1830}
+*{box-sizing:border-box}body{margin:0;background:#210d27;color:var(--cream);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button,input{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:11px 15px;font-weight:750}
+#loader{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(ellipse at center,#62265e 0,#35113b 56%,#1b0b22 100%);transition:opacity .7s,visibility .7s}
+#loader.done{opacity:0;visibility:hidden;pointer-events:none}.loader-icons{font-size:clamp(28px,5vw,48px);letter-spacing:9px;min-height:60px;filter:drop-shadow(0 0 12px #ffd86b);animation:float 1.5s infinite alternate}
+@keyframes float{to{transform:translateY(-7px)}}.loader-title{font-family:Georgia,serif;font-weight:900;font-size:clamp(27px,5vw,52px);text-transform:uppercase;margin:12px 0 4px;text-shadow:0 0 22px #f5caff}.loader-sub{color:var(--gold);font-weight:800;letter-spacing:2px}
+.progress-shell{width:min(560px,90vw);height:18px;margin:26px 0 12px;border:2px solid #f5d889;border-radius:30px;padding:2px;box-shadow:0 0 18px #ffce5b,inset 0 0 8px #ffce5b}.progress{height:100%;width:0;border-radius:30px;background:linear-gradient(90deg,#ff7b16,#ffdf75,#fff,#d43bcb);box-shadow:0 0 16px #ffdb67;transition:width .16s}
+header{padding:18px clamp(16px,4vw,54px);background:linear-gradient(115deg,#2a0f31,#572052);border-bottom:3px solid var(--gold);display:flex;align-items:center;gap:16px}.brand{font-size:35px;filter:drop-shadow(0 0 8px #e8ce8a)}header h1{font-family:Georgia,serif;font-size:clamp(20px,3vw,32px);margin:0;text-transform:uppercase}header p{margin:4px 0 0;color:var(--gold);font-weight:750}
+main{max-width:1240px;margin:auto;padding:24px 18px 50px}.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(260px,.8fr);gap:24px;align-items:center}.hero h2{font-family:Georgia,serif;font-size:clamp(34px,5vw,62px);line-height:.98;margin:0 0 14px;text-transform:uppercase}.hero h2 span{color:var(--gold)}.hero p{font-size:16px;line-height:1.6;color:#f1e6f2}.poster{width:100%;max-height:560px;object-fit:contain;border-radius:18px;box-shadow:0 15px 40px #100615;border:1px solid #8e5a91}.tags{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0}.tag{padding:9px 13px;border:1px solid #d9bb70;border-radius:30px;background:#ffffff0b;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0}.stat{border:1px solid #9a6595;border-radius:16px;padding:18px;background:linear-gradient(145deg,#51204e,#311035);box-shadow:0 8px 24px #100615}.stat .ico{font-size:25px}.stat strong{display:block;font-size:clamp(27px,4vw,42px);color:var(--gold);line-height:1.2}.stat span{font-size:13px;color:#f0dff1}
+.panel{margin-top:24px;background:var(--cream);color:var(--ink);border-radius:20px;overflow:hidden;box-shadow:0 18px 50px #120617}.panel-head{padding:21px 24px;background:linear-gradient(100deg,#54204f,#8c176f);color:white}.panel-head h2{margin:0;font-size:clamp(22px,3vw,31px)}.panel-head p{margin:7px 0 0;color:#f7e9ca}
+.toolbar{padding:16px 20px;display:flex;gap:9px;flex-wrap:wrap;align-items:center;background:#f3e8d9}.search{flex:1;min-width:220px;padding:12px 14px;border:1px solid #c8b6c6;border-radius:11px}.btn-primary{background:#68205e;color:#fff}.btn-gold{background:#e8d19a;color:#34163a}.btn-orange{background:#e86b0b;color:#fff}.btn-dark{background:#342039;color:white}.btn-light{background:#fff;border:1px solid #d3c0d1;color:#402143}.count{font-weight:800;color:#53204f;margin-left:auto}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:740px}th{background:#ead9b9;color:#3b1741;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.4px}th,td{padding:12px 14px;border-bottom:1px solid #eadfce}tbody tr:nth-child(even){background:#fbf1e6}tbody tr:hover{background:#f6e1f2}.empty{display:none;padding:28px;text-align:center;color:#654c64}
+.note{font-size:12px;color:#6c5968;padding:0 22px 20px;line-height:1.5}
+dialog{border:0;border-radius:18px;padding:0;width:min(560px,94vw);box-shadow:0 20px 80px #0009;color:var(--ink)}dialog::backdrop{background:#170a1dcc;backdrop-filter:blur(4px)}.modal-head{padding:18px 22px;background:#54204f;color:#fff}.modal-head h3{margin:0}.modal-body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:800;color:#563354}.field input{padding:11px;border:1px solid #cdbdcd;border-radius:9px}.modal-actions{padding:0 20px 20px;display:flex;justify-content:flex-end;gap:8px}
+footer{text-align:center;color:#d9c7dd;padding:25px 15px;font-size:13px}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.poster{max-height:500px;order:-1}.stats{grid-template-columns:1fr}.hero h2{font-size:42px}.count{margin-left:0;width:100%}}
+@media print{
+ body{background:white;color:#111;font-size:11pt}#loader,header,.hero,.stats,.toolbar,.no-print,footer{display:none!important}main{max-width:none;padding:0}.panel{box-shadow:none;border-radius:0;margin:0;background:white}.panel-head{background:white;color:#111;padding:0 0 10px;border-bottom:2px solid #333}.panel-head p{color:#222}.panel-head h2{font-size:18pt}table{min-width:0;width:100%;font-size:10pt}th{background:#eee!important;color:#111!important}th,td{padding:6px 8px;border:1px solid #aaa;color:#111}thead{display:table-header-group}tr{break-inside:avoid}.note{padding:8px 0;color:#333}.print-header{display:block!important}
+}
+.print-header{display:none}
+
+.map-panel{margin-top:24px;background:var(--cream);color:var(--ink);border-radius:20px;overflow:hidden;box-shadow:0 18px 50px #120617}.map-head{padding:21px 24px;background:linear-gradient(100deg,#54204f,#8c176f);color:#fff}.map-head h2{margin:0;font-size:clamp(22px,3vw,31px)}.map-head p{margin:7px 0 0;color:#f7e9ca}.map-content{padding:18px}.map-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:16px}.map-stat{background:#f2e5d4;border:1px solid #dfc7a7;border-radius:13px;padding:14px}.map-stat strong{display:block;font-size:25px;color:#54204f}.map-stat span{font-size:12px}.map-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px}.map-filters button{background:#fff;border:1px solid #d7c5d6;color:#402143}.map-filters button.active{background:#54204f;color:#fff}.map-frame{width:100%;height:440px;border:0;border-radius:14px;background:#eadfce}.map-help{font-size:13px;line-height:1.55;color:#654c64;margin:13px 0 0}.map-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.map-actions a{display:inline-block;padding:10px 13px;border-radius:10px;background:#54204f;color:white;text-decoration:none;font-weight:750}.map-actions a:hover{background:#7b286e}.category-key{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.key-pill{padding:7px 10px;border-radius:20px;font-size:12px;font-weight:800;background:#f1e6f2;border:1px solid #ddc4dd}.key-pill.comedor{border-color:#2d9cdb}.key-pill.territorial{border-color:#e8a22d}.key-pill.comunidad{border-color:#40a66a}@media(max-width:760px){.map-summary{grid-template-columns:1fr}.map-frame{height:350px}}
+
+
+/* Croquis Tamalada: paleta de tradición, tamalitos y sedes por color */
+#communityMap{height:540px;border:3px solid #e7ce86;border-radius:16px;overflow:hidden;box-shadow:inset 0 0 0 4px #54204f}
+.leaflet-popup-content-wrapper{border:2px solid #e8d19a;border-radius:13px;background:#fff9ed;color:#35143a}.leaflet-popup-tip{background:#fff9ed}.tam-marker{display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 3px 3px #26102b99)}.tam-marker .tam-body{height:31px;min-width:35px;padding:2px 5px;border:2px solid #fff5d7;border-radius:11px 11px 13px 13px;font-size:19px;text-align:center;line-height:25px}.tam-marker .tam-id{font-size:9px;line-height:14px;font-weight:900;color:#fff;background:#38143d;border:1px solid #f0d88e;border-radius:8px;padding:0 4px;margin-top:-1px;white-space:nowrap}.map-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:15px}.site-card{border:1px solid #e0cba9;border-left:5px solid var(--site-color);border-radius:12px;padding:12px;background:#fffdf8;color:#321738}.site-card h4{margin:0 0 5px;font-size:15px}.site-card p{margin:4px 0;font-size:12px;line-height:1.4}.site-card .site-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.site-card a,.site-card button{font-size:12px;padding:7px 9px;text-decoration:none;border-radius:8px;font-weight:800}.site-card a{background:#54204f;color:white}.site-card button{background:#f0dfb5;color:#3b1741}.map-status{background:#f7ecd5;border:1px solid #e4c985;border-radius:10px;padding:10px 12px;color:#4c2b4b;font-size:13px;margin:12px 0}.map-filter{border-bottom:4px solid var(--filter-color)!important}.key-pill.comedor{border-color:#168aad;background:#e2f5fa}.key-pill.territorial{border-color:#dc7b19;background:#fff0d8}.key-pill.comunidad{border-color:#31845a;background:#e5f6e9}
+@media(max-width:760px){#communityMap{height:420px}.map-list{grid-template-columns:1fr}}
+</style>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+<section id="loader" aria-label="Cargando sitio"><div class="loader-icons" id="loaderIcons">💀 🌽 🫔 🌼</div><div class="loader-title">Tamalada Comunitaria</div><div class="loader-sub">EN IZTAPALAPA · A NADIE SE LE OLVIDA</div><div class="progress-shell"><div class="progress" id="progress"></div></div><strong id="percent">0%</strong><p>Preparando el portal de participantes…</p></section>
+<header><div class="brand">🌼💀🫔</div><div><h1>Tamalada Comunitaria</h1><p>En Iztapalapa, a nadie se le olvida</p></div></header>
+<main>
+<section class="hero"><div><h2>Una tradición que <span>nos reúne</span></h2><p>Portal de consulta y administración de los registros de participantes de la Tamalada Comunitaria.</p><div class="tags"><span class="tag">📅 Domingo 25 de octubre de 2026</span><span class="tag">🕔 17:00 horas</span><span class="tag">🫔 Entrada libre</span></div><p><b>📍 Sede indicada:</b><br>Parque Castores, Parque Nacional Cerro de la Estrella, Iztapalapa, 09800 Ciudad de México, CDMX.</p></div><img class="poster" src="poster-tamalada.png" alt="Cartel de la Tamalada Comunitaria"></section>
+<section class="stats">
+ <div class="stat"><div class="ico">👥</div><strong id="totalTop">—</strong><span>Participantes en la lista</span></div>
+ <div class="stat"><div class="ico">📋</div><strong id="totalShown">—</strong><span>Registros visibles con el filtro actual</span></div>
+ <div class="stat"><div class="ico">🖨️</div><strong id="printCount">0</strong><span>Impresiones registradas en este navegador</span></div>
+</section>
+
+<section class="map-panel" id="sedes">
+ <div class="map-head"><h2>🫔🗺️ Croquis comunitario de sedes</h2><p>Un mapa con identidad de la Tamalada: cada sede lleva su ID y un tamalito; el color identifica el tipo de lugar.</p></div>
+ <div class="map-content">
+  <div class="map-summary"><div class="map-stat"><strong id="siteTotal">36 sedes</strong><span>Total de ubicaciones registradas en el catálogo</span></div><div class="map-stat"><strong>3 categorías</strong><span>Colores e iconos consistentes para distinguir cada tipo de sede</span></div></div>
+  <div class="category-key"><span class="key-pill comedor">🫔 Azul · Comedores de Cuidados (15)</span><span class="key-pill territorial">🫔 Naranja · Direcciones territoriales (5)</span><span class="key-pill comunidad">🫔 Verde · Puntos comunitarios (16)</span></div>
+  <div class="map-filters" role="group" aria-label="Filtrar tipo de sede"><button class="active" data-maptype="all">🫔 Todas las sedes (36)</button><button data-maptype="comedores">🫔 Comedores (15)</button><button data-maptype="territoriales">🫔 Direcciones territoriales (5)</button><button data-maptype="comunitarios">🫔 Puntos comunitarios (16)</button></div>
+  <div id="mapStatus" class="map-status">Preparando el croquis y ubicando las direcciones. Las sedes sin coordenadas se geolocalizan a partir de la dirección proporcionada; las ubicaciones ambiguas deben verificarse.</div>
+  <div id="communityMap" aria-label="Mapa interactivo de sedes comunitarias"></div>
+  <div class="map-actions"><a id="openGoogle" href="https://www.google.com/maps/search/?api=1&query=Iztapalapa%2C%20Ciudad%20de%20M%C3%A9xico" target="_blank" rel="noopener">↗ Abrir Google Maps</a><a href="https://iztapalapacomparte.netlify.app/" target="_blank" rel="noopener">📋 Directorio original</a><a href="Registro_de_Sedes_Tamalada_Comunitaria_Iztapalapa_25_octubre_2026.xlsx" download style="background:#e8d19a;color:#34163a">⬇ Descargar registro Excel</a></div>
+  <h3 style="color:#54204f;margin:22px 0 6px">📍 Directorio de sedes por ID</h3><p class="map-help">Selecciona «Ver en mapa» para centrar el punto localizado o «Google Maps» para abrir la búsqueda de la dirección en Google Maps. Los marcadores tienen un tamalito y el ID de la sede.</p>
+  <div id="siteDirectory" class="map-list"></div>
+ </div>
+</section>
+<section class="panel">
+ <div class="panel-head"><h2>🫔 Registro de participantes</h2><p>Alta, edición, descarga de la base de datos e impresión del listado.</p></div>
+ <div class="toolbar">
+  <input id="search" class="search" type="search" placeholder="🔎 Buscar nombre, apellido o teléfono…" aria-label="Buscar participante">
+  <button class="btn-primary" id="addBtn">＋ Registrar participante</button>
+  <button class="btn-gold" id="downloadBtn">⬇ Descargar base de datos</button>
+  <button class="btn-orange" id="printBtn">🖨 Imprimir registros</button>
+  <span class="count" id="count">Cargando registros…</span>
+ </div>
+ <div class="print-header"><h2>TAMALADA COMUNITARIA — EN IZTAPALAPA, A NADIE SE LE OLVIDA</h2><p><b>Sede:</b> Parque Castores, Parque Nacional Cerro de la Estrella, Iztapalapa, 09800 Ciudad de México, CDMX.</p><p><b>Día:</b> Domingo 25 de octubre de 2026 &nbsp; <b>Horario:</b> 17:00 horas &nbsp; <b>Total de participantes:</b> <span id="printTotal">0</span></p></div>
+ <div class="table-wrap"><table><thead><tr><th>No.</th><th>Nombre</th><th>Apellido paterno</th><th>Apellido materno</th><th>Número telefónico</th><th class="no-print">Acciones</th></tr></thead><tbody id="tbody"></tbody></table></div>
+ <div id="empty" class="empty">No se encontraron coincidencias.</div>
+ <div class="note">La lista inicial se cargó desde el archivo Excel proporcionado. Los cambios que realices se guardan en el almacenamiento local de este navegador. Para conservarlos fuera de este equipo, descarga la base de datos actualizada. La impresión incluye encabezado del evento y total de registros.</div>
+</section>
+</main><footer>Alcaldía Iztapalapa · Cultura, tradición y comunidad</footer>
+<dialog id="editor"><form id="editForm"><div class="modal-head"><h3 id="modalTitle">Registrar participante</h3></div><div class="modal-body">
+ <input type="hidden" id="recordId">
+ <div class="field full"><label for="nombre">Nombre(s)</label><input id="nombre" required maxlength="120"></div>
+ <div class="field"><label for="paterno">Apellido paterno</label><input id="paterno" required maxlength="100"></div>
+ <div class="field"><label for="materno">Apellido materno</label><input id="materno" maxlength="100"></div>
+ <div class="field full"><label for="telefono">Número telefónico</label><input id="telefono" type="tel" maxlength="30" placeholder="Teléfono de contacto"></div>
+ </div><div class="modal-actions"><button type="button" class="btn-light" id="cancelBtn">Cancelar</button><button type="submit" class="btn-primary">Guardar registro</button></div></form></dialog>
+<script>
+
+// Helpers definidos al inicio para evitar errores de inicialización en navegadores.
+const SITE_COLORS={'Comedor de Cuidados':'#168aad','Dirección territorial':'#dc7b19','Punto comunitario':'#31845a'};
+const SITE_TYPES={'Comedor de Cuidados':'comedores','Dirección territorial':'territoriales','Punto comunitario':'comunitarios'};
+let sites=[], siteMarkers=new Map(), activeSiteType='all', communityMap;
+function siteTypeKey(s){return SITE_TYPES[s.tipo]||'comunitarios'}
+function siteColor(s){return SITE_COLORS[s.tipo]||'#54204f'}
+function googleUrl(s){return s.google||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent([s.nombre,s.direccion,s.alcaldia,s.ciudad].filter(Boolean).join(', ')))}
+function markerIcon(s){return L.divIcon({className:'',html:`<div class="tam-marker"><span class="tam-body" style="background:${siteColor(s)}">🫔</span><span class="tam-id">${s.id}</span></div>`,iconSize:[48,52],iconAnchor:[24,48],popupAnchor:[0,-44]})}
+function sitePopup(s){return `<div style="min-width:190px"><div style="font-size:11px;font-weight:900;color:${siteColor(s)}">${esc(s.id)} · ${esc(s.tipo)}</div><h3 style="margin:4px 0;color:#38143d">🫔 ${esc(s.nombre)}</h3><p style="margin:5px 0;font-size:12px">${esc(s.direccion)}</p><a style="display:inline-block;margin-top:7px;padding:7px 10px;border-radius:7px;background:#54204f;color:white;text-decoration:none;font-weight:800" href="${esc(googleUrl(s))}" target="_blank" rel="noopener">↗ Abrir en Google Maps</a></div>`}
+function renderSiteDirectory(){const filtered=sites.filter(s=>activeSiteType==='all'||siteTypeKey(s)===activeSiteType);$('siteDirectory').innerHTML=filtered.map(s=>`<article class="site-card" style="--site-color:${siteColor(s)}"><h4><span style="color:${siteColor(s)}">🫔 ${esc(s.id)}</span> · ${esc(s.nombre)}</h4><p><b>${esc(s.tipo)}</b></p><p>${esc(s.direccion)}</p><div class="site-actions"><button type="button" data-focus-site="${esc(s.id)}">⌖ Ver en mapa</button><a href="${esc(googleUrl(s))}" target="_blank" rel="noopener">↗ Google Maps</a></div></article>`).join('')}
+function applySiteFilter(type){activeSiteType=type;document.querySelectorAll('[data-maptype]').forEach(b=>b.classList.toggle('active',b.dataset.maptype===type));siteMarkers.forEach((marker,id)=>{const s=sites.find(x=>x.id===id);const show=type==='all'||siteTypeKey(s)===type;if(show){if(!communityMap.hasLayer(marker))marker.addTo(communityMap)}else if(communityMap.hasLayer(marker))communityMap.removeLayer(marker)});renderSiteDirectory();const label=type==='all'?'todas las sedes':type==='comedores'?'comedores de cuidados':type==='territoriales'?'direcciones territoriales':'puntos comunitarios';$('openGoogle').href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(label+' Iztapalapa Ciudad de México');}
+document.querySelectorAll('[data-maptype]').forEach(btn=>btn.addEventListener('click',()=>applySiteFilter(btn.dataset.maptype)));
+$('siteDirectory').addEventListener('click',e=>{const b=e.target.closest('[data-focus-site]');if(!b)return;const m=siteMarkers.get(b.dataset.focusSite);if(m){if(!communityMap.hasLayer(m))m.addTo(communityMap);communityMap.setView(m.getLatLng(),16,{animate:true});m.openPopup()}else{$('mapStatus').textContent='Esta dirección todavía no se ha localizado automáticamente. Usa el botón Google Maps de su ficha para comprobarla.';}});
+async function locateSite(s){if(Number.isFinite(Number(s.lat))&&Number.isFinite(Number(s.lon))&&s.lat!==null&&s.lon!==null){return [Number(s.lat),Number(s.lon)]}const cacheKey='tamalada_geocode_'+s.id;try{const cached=localStorage.getItem(cacheKey);if(cached){const v=JSON.parse(cached);if(v&&Number.isFinite(v.lat)&&Number.isFinite(v.lon))return [v.lat,v.lon]}}catch(e){}
+ const query=[s.direccion,s.alcaldia,s.ciudad,s.entidad,'México'].filter(Boolean).join(', ');try{const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=mx&q='+encodeURIComponent(query);const response=await fetch(url,{headers:{'Accept-Language':'es'}});if(!response.ok)return null;const results=await response.json();if(!results.length)return null;const point={lat:Number(results[0].lat),lon:Number(results[0].lon)};if(!Number.isFinite(point.lat)||!Number.isFinite(point.lon))return null;localStorage.setItem(cacheKey,JSON.stringify(point));return [point.lat,point.lon]}catch(e){return null}}
+async function initializeSiteMap(){
+ if(!window.L){$('mapStatus').textContent='No se pudo cargar la biblioteca del mapa. Revisa tu conexión a internet; el directorio y los enlaces a Google Maps siguen disponibles.';return}
+ communityMap=L.map('communityMap',{scrollWheelZoom:false}).setView([19.345, -99.06],12);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(communityMap);
+ const bounds=[];let found=0;for(let i=0;i<sites.length;i++){const s=sites[i];$('mapStatus').textContent=`Localizando sedes con sus direcciones… ${i+1} de ${sites.length}`;const point=await locateSite(s);if(point){const marker=L.marker(point,{icon:markerIcon(s),title:s.id+' · '+s.nombre,alt:s.id+' tamalito '+s.tipo}).bindPopup(sitePopup(s));siteMarkers.set(s.id,marker);marker.addTo(communityMap);bounds.push(point);found++;}await new Promise(resolve=>setTimeout(resolve,1050));}
+ if(bounds.length)communityMap.fitBounds(bounds,{padding:[28,28],maxZoom:13});applySiteFilter(activeSiteType);$('mapStatus').textContent=`Directorio: ${sites.length} sedes · ${found} ubicaciones localizadas automáticamente. Cada marcador incluye tamalito, ID y acceso a Google Maps. ${found<sites.length?'Las sedes restantes aparecen en el directorio y pueden abrirse en Google Maps para verificar la dirección.':'Verifica la dirección de cada punto antes de iniciar un recorrido.'}`;
+}
+fetch('sedes.json').then(r=>{if(!r.ok)throw new Error('No se pudo cargar sedes.json');return r.json()}).then(data=>{sites=data;$('siteTotal').textContent=sites.length+' sedes';renderSiteDirectory();initializeSiteMap()}).catch(()=>{$('siteTotal').textContent='36 sedes';$('mapStatus').textContent='No se pudo cargar sedes.json. Conserva el archivo junto a index.html y vuelve a desplegar el sitio.'});
+
+const KEY='tamalada_iztapalapa_participantes_v3';
+const OLD_KEY='tamalada_iztapalapa_participantes_v2';
+let people=[];
+const $=id=>document.getElementById(id);
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function persist(){localStorage.setItem(KEY,JSON.stringify(people));}
+function render(){
+ const q=$('search').value.trim().toLocaleLowerCase('es');
+ const filtered=people.filter(p=>[p.nombre,p.paterno,p.materno,p.telefono].join(' ').toLocaleLowerCase('es').includes(q));
+ $('tbody').innerHTML=filtered.map(p=>`<tr><td>${esc(p.id)}</td><td>${esc(p.nombre)}</td><td>${esc(p.paterno)}</td><td>${esc(p.materno)}</td><td>${esc(p.telefono||'—')}</td><td class="no-print"><button class="btn-light" data-edit="${esc(p.id)}">✏️ Editar</button></td></tr>`).join('');
+ $('count').textContent=`${filtered.length} de ${people.length} registros`;
+ $('totalTop').textContent=people.length;$('totalShown').textContent=filtered.length;$('printTotal').textContent=people.length;
+ $('empty').style.display=filtered.length?'none':'block';
+}
+function openEditor(p){
+ $('editForm').reset();$('recordId').value=p?p.id:'';$('modalTitle').textContent=p?'Editar registro':'Registrar participante';
+ if(p){$('nombre').value=p.nombre;$('paterno').value=p.paterno;$('materno').value=p.materno;$('telefono').value=p.telefono||'';}
+ $('editor').showModal();
+}
+$('tbody').addEventListener('click',e=>{const b=e.target.closest('[data-edit]');if(b){const p=people.find(x=>String(x.id)===b.dataset.edit);if(p)openEditor(p)}});
+$('addBtn').addEventListener('click',()=>openEditor(null));
+$('cancelBtn').addEventListener('click',()=>$('editor').close());
+$('editForm').addEventListener('submit',e=>{
+ e.preventDefault();const id=$('recordId').value;
+ const rec={id:id||String(Date.now()),nombre:$('nombre').value.trim(),paterno:$('paterno').value.trim(),materno:$('materno').value.trim(),telefono:$('telefono').value.trim()};
+ if(id){const i=people.findIndex(p=>String(p.id)===id);if(i>=0)people[i]=rec;}else people.push(rec);
+ persist();render();$('editor').close();
+});
+$('search').addEventListener('input',render);
+$('downloadBtn').addEventListener('click',()=>{
+ const headers=['Nombre','Apellido Paterno','Apellido Materno','Número Telefónico'];
+ const csv=[headers,...people.map(p=>[p.nombre,p.paterno,p.materno,p.telefono||''])].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+ const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='Tamalada_Iztapalapa_base_participantes.csv';a.click();URL.revokeObjectURL(url);
+});
+$('printBtn').addEventListener('click',()=>{let n=Number(localStorage.getItem('tamalada_print_count')||0)+1;localStorage.setItem('tamalada_print_count',String(n));$('printCount').textContent=n;window.print();});
+function normalizePerson(p,i){return {id:String(p.id||i+1),nombre:p.nombre||'',paterno:p.paterno||'',materno:p.materno||'',telefono:p.telefono||''};}
+function personKey(p){return [p.nombre,p.paterno,p.materno].map(v=>String(v||'').trim().toLocaleLowerCase('es')).join('|');}
+function loadData(data){
+ const base=data.map(normalizePerson);
+ let saved=[];
+ try{saved=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLD_KEY)||'[]');if(!Array.isArray(saved))saved=[];}catch(e){saved=[];}
+ const savedByName=new Map(saved.map((p,i)=>{const n=normalizePerson(p,i);return [personKey(n),n]}));
+ const merged=base.map(p=>savedByName.get(personKey(p))||p);
+ const baseKeys=new Set(merged.map(personKey));
+ saved.forEach((p,i)=>{const n=normalizePerson(p,i+base.length);if(!baseKeys.has(personKey(n))){merged.push(n);baseKeys.add(personKey(n));}});
+ people=merged;persist();render();
+}
+fetch('participantes.json').then(r=>{if(!r.ok)throw new Error('No se pudo cargar la base de datos');return r.json()}).then(loadData).catch(()=>{try{const saved=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLD_KEY)||'[]');people=Array.isArray(saved)?saved.map(normalizePerson):[];}catch(e){people=[];}render();});
+let n=0;const timer=setInterval(()=>{n=Math.min(100,n+Math.random()*7+2);$('progress').style.width=n+'%';$('percent').textContent=Math.floor(n)+'%';$('loaderIcons').textContent=['💀 🌽 🫔 🌼','🌺 🫔 🌽 💀','🌽 ✨ 🫔 🌼','💀 🌼 🌽 🫔'][Math.min(3,Math.floor(n/26))];if(n>=100){clearInterval(timer);setTimeout(()=>$('loader').classList.add('done'),450)}},130);
+try{$('printCount').textContent=localStorage.getItem('tamalada_print_count')||'0'}catch(e){}
+</script>
+</body></html>
